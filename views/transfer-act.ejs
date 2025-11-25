@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Акт приема-передачи материалов Олимпиады</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .act {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            font-size: 16px;
+            font-weight: normal;
+            margin-bottom: 30px;
+        }
+        .info-line {
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+            vertical-align: middle;
+        }
+        th {
+            font-weight: bold;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        .section-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        .signature-block {
+            margin-top: 50px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .signature-line {
+            text-align: center;
+            width: 45%;
+        }
+        .print-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        @media print {
+            .print-button {
+                display: none;
+            }
+            body {
+                padding: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="print-button" onclick="window.print()">Печать</button>
+    
+    <div class="act">
+        <div class="header">
+            <h1>Акт приема-передачи материалов Олимпиады из ППО в филиал ЕДУ</h1>
+        </div>
+
+        <div class="info-line">
+            <span>Код ППО: <strong><%= site_code %></strong></span>
+        </div>
+
+        <div class="info-line">
+            <span>Предмет: <strong><%= subject %></strong></span>
+        </div>
+
+        <div class="info-line">
+            <span>Дата Олимпиады: «<%= new Date(exam_date).getDate() %>» 
+                  <%= new Date(exam_date).toLocaleDateString('ru-RU', { month: 'long' }) %> 
+                  20<%= new Date(exam_date).getFullYear().toString().slice(-2) %> г.</span>
+        </div>
+
+        <div class="section">
+            <div class="section-title">- олимпиадные работы (по параллели заданий)</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th width="40%">Параллель заданий</th>
+                        <th width="30%">№ аудитории</th>
+                        <th width="30%">Кол-во работ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% worksRows.forEach((row, index) => { %>
+                    <tr>
+                        <td><%= row.parallel %></td>
+                        <td><%= row.classroom %></td>
+                        <td><%= row.count %></td>
+                    </tr>
+                    <% }); %>
+                    <tr>
+                        <td colspan="2" style="text-align: right; font-weight: bold;">Общее кол-во работ:</td>
+                        <td style="font-weight: bold;">
+                            <%= parallelTotals.reduce((sum, row) => sum + (parseInt(row.total) || 0), 0) %>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <div class="section-title">- листы регистрации (по параллели заданий)</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th width="70%">Параллель заданий</th>
+                        <th width="30%">Общее кол-во работ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% parallelTotals.forEach((row, index) => { %>
+                    <tr>
+                        <td><%= row.parallel %></td>
+                        <td><%= row.total %></td>
+                    </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <div class="section-title">- приказы ОО о выходе участников Олимпиады в ППО</div>
+            <div style="margin-left: 20px; margin-bottom: 10px;">_________________________________</div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">- ведомости сдачи работ из аудиторий</div>
+            <div style="margin-left: 20px; margin-bottom: 10px;">_________________________________</div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">- использованные КИМ (при наличии)</div>
+            <div style="margin-left: 20px; margin-bottom: 10px;">_________________________________</div>
+        </div>
+
+        <div class="signature-block">
+            <div class="signature-line">
+                Сдал: _________ / ____________________
+            </div>
+            <div class="signature-line">
+                Принял: ___________ / ____________________
+            </div>
+        </div>
+    </div>
+</body>
+</html>

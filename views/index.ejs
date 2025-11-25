@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Генератор ведомостей Олимпиады</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            font-weight: 300;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 16px;
+        }
+        
+        .form-container {
+            padding: 30px;
+        }
+        
+        .form-section {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .form-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 20px;
+            font-weight: 600;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+        
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .radio-option {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .radio-option input {
+            width: auto;
+            margin-right: 8px;
+        }
+        
+        .buttons-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .btn {
+            padding: 15px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(52, 152, 219, 0.3);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(39, 174, 96, 0.3);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(149, 165, 166, 0.3);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(243, 156, 18, 0.3);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .icon {
+            font-size: 18px;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            color: #7f8c8d;
+            border-top: 1px solid #e1e8ed;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .buttons-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .radio-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Генератор ведомостей Олимпиады</h1>
+            <p>Формирование печатных форм для учета олимпиадных работ</p>
+        </div>
+        
+        <div class="form-container">
+            <form id="mainForm">
+                <!-- Основные параметры -->
+                <div class="form-section">
+                    <h2>🎯 Основные параметры</h2>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="exam_date">📅 Дата проведения Олимпиады:</label>
+                            <input type="date" id="exam_date" name="exam_date" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="site_code">🏛️ Код площадки:</label>
+                            <input type="text" id="site_code" name="site_code" placeholder="Введите код ППО" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="subject">📚 Предмет:</label>
+                        <select id="subject" name="subject" required>
+                            <option value="">Выберите предмет</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Режим генерации -->
+                <div class="form-section">
+                    <h2>⚙️ Режим генерации ведомостей</h2>
+                    
+                    <div class="form-group">
+                        <label>Выберите режим:</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="mode" value="single" checked> 
+                                Для одной аудитории
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="mode" value="all"> 
+                                Для всех аудиторий
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div id="classroomField" class="form-group">
+                        <label for="classroom">🚪 № аудитории:</label>
+                        <select id="classroom" name="classroom">
+                            <option value="">Выберите аудиторию</option>
+                            <% classrooms.forEach(classroom => { %>
+                                <option value="<%= classroom.номер_кабинета %>">
+                                    Аудитория <%= classroom.номер_кабинета %>
+                                </option>
+                            <% }); %>
+                        </select>
+                    </div>
+                    
+                    <div class="buttons-grid">
+                        <button type="button" onclick="generateSingleStatement()" class="btn btn-primary">
+                            <span class="icon">📄</span>
+                            Ведомость по аудитории
+                        </button>
+                        
+                        <button type="button" onclick="generateAllStatements()" class="btn btn-success hidden">
+                            <span class="icon">📑</span>
+                            Ведомости для всех аудиторий
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Дополнительные формы -->
+                <div class="form-section">
+                    <h2>📋 Дополнительные формы</h2>
+                    <p style="margin-bottom: 15px; color: #7f8c8d;">Генерация сводных документов по выбранному предмету</p>
+                    
+                    <div class="buttons-grid">
+                        <button type="button" onclick="generateGeneralStatement()" class="btn btn-warning">
+                            <span class="icon">📊</span>
+                            Общая ведомость учета
+                        </button>
+                        
+                        <button type="button" onclick="generateTransferAct()" class="btn btn-secondary">
+                            <span class="icon">📦</span>
+                            Акт приема-передачи
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <div class="footer">
+            <p>Система генерации печатных форм • Олимпиадные работы</p>
+        </div>
+    </div>
+
+    <script>
+        // Элементы DOM
+        const modeRadios = document.querySelectorAll('input[name="mode"]');
+        const classroomField = document.getElementById('classroomField');
+        const classroomSelect = document.getElementById('classroom');
+        const subjectSelect = document.getElementById('subject');
+        const singleBtn = document.querySelector('button[onclick="generateSingleStatement()"]');
+        const allBtn = document.querySelector('button[onclick="generateAllStatements()"]');
+
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', function() {
+            // Установка сегодняшней даты по умолчанию
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('exam_date').value = today;
+            
+            // Загрузка всех предметов при загрузке страницы
+            loadAllSubjects();
+        });
+
+        // Обработчик изменения режима
+        modeRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.value === 'all') {
+                    classroomField.style.opacity = '0.6';
+                    classroomField.style.pointerEvents = 'none';
+                    singleBtn.classList.add('hidden');
+                    allBtn.classList.remove('hidden');
+                    loadAllSubjects();
+                } else {
+                    classroomField.style.opacity = '1';
+                    classroomField.style.pointerEvents = 'auto';
+                    singleBtn.classList.remove('hidden');
+                    allBtn.classList.add('hidden');
+                    if (classroomSelect.value) {
+                        loadSubjectsForClassroom(classroomSelect.value);
+                    }
+                }
+            });
+        });
+
+        // Загрузка предметов для аудитории
+        function loadSubjectsForClassroom(classroom) {
+            fetch(`/api/subjects/${classroom}`)
+                .then(response => response.json())
+                .then(subjects => {
+                    updateSubjectSelect(subjects);
+                })
+                .catch(error => {
+                    console.error('Ошибка:', error);
+                    showError('Ошибка загрузки предметов');
+                });
+        }
+
+        // Загрузка всех предметов
+        function loadAllSubjects() {
+            fetch('/api/all-subjects')
+                .then(response => response.json())
+                .then(subjects => {
+                    updateSubjectSelect(subjects);
+                })
+                .catch(error => {
+                    console.error('Ошибка:', error);
+                    showError('Ошибка загрузки предметов');
+                });
+        }
+
+        // Обновление списка предметов
+        function updateSubjectSelect(subjects) {
+            subjectSelect.innerHTML = '<option value="">Выберите предмет</option>';
+            subjects.forEach(subject => {
+                const option = document.createElement('option');
+                option.value = subject;
+                option.textContent = subject;
+                subjectSelect.appendChild(option);
+            });
+        }
+
+        // Обработчик изменения аудитории
+        classroomSelect.addEventListener('change', function() {
+            if (this.value && document.querySelector('input[name="mode"]:checked').value === 'single') {
+                loadSubjectsForClassroom(this.value);
+            }
+        });
+
+        // Функции генерации
+        function generateSingleStatement() {
+            const formData = getFormData();
+            if (!formData) return;
+            
+            if (!formData.classroom) {
+                showError('Выберите аудиторию для генерации ведомости');
+                return;
+            }
+            
+            window.open(`/generate?classroom=${formData.classroom}&subject=${formData.subject}&exam_date=${formData.exam_date}&site_code=${formData.site_code}`, '_blank');
+        }
+
+        function generateAllStatements() {
+            const formData = getFormData();
+            if (!formData) return;
+            
+            window.open(`/generate?subject=${formData.subject}&exam_date=${formData.exam_date}&site_code=${formData.site_code}&all_classrooms=true`, '_blank');
+        }
+
+        function generateGeneralStatement() {
+            const formData = getFormData();
+            if (!formData) return;
+            
+            window.open(`/general-statement?subject=${formData.subject}&exam_date=${formData.exam_date}&site_code=${formData.site_code}`, '_blank');
+        }
+
+        function generateTransferAct() {
+            const formData = getFormData();
+            if (!formData) return;
+            
+            window.open(`/transfer-act?subject=${formData.subject}&exam_date=${formData.exam_date}&site_code=${formData.site_code}`, '_blank');
+        }
+
+        // Вспомогательные функции
+        function getFormData() {
+            const subject = subjectSelect.value;
+            const exam_date = document.getElementById('exam_date').value;
+            const site_code = document.getElementById('site_code').value;
+            const classroom = classroomSelect.value;
+            
+            if (!subject || !exam_date || !site_code) {
+                showError('Заполните все обязательные поля: предмет, дата и код площадки');
+                return null;
+            }
+            
+            return { subject, exam_date, site_code, classroom };
+        }
+
+        function showError(message) {
+            alert('❌ ' + message);
+        }
+
+        function showSuccess(message) {
+            alert('✅ ' + message);
+        }
+    </script>
+</body>
+</html>
