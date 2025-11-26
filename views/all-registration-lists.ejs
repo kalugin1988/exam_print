@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Листы регистрации участников</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .registration-list {
+            max-width: 800px;
+            margin: 0 auto 50px auto;
+            page-break-after: always;
+        }
+        .registration-list:last-child {
+            page-break-after: avoid;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .school-name {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        .olympiad-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+        .document-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+        .classroom-info {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            margin-bottom: 30px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 5px;
+            text-align: center;
+            vertical-align: middle;
+        }
+        th {
+            font-weight: bold;
+            background-color: #f0f0f0;
+        }
+        .number-col {
+            width: 5%;
+        }
+        .school-col {
+            width: 15%;
+        }
+        .class-col {
+            width: 10%;
+        }
+        .name-col {
+            width: 30%;
+            text-align: left;
+        }
+        .classroom-col {
+            width: 10%;
+        }
+        .place-col {
+            width: 10%;
+        }
+        .signature-col {
+            width: 20%;
+        }
+        .print-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            z-index: 1000;
+        }
+        .print-button:hover {
+            background-color: #0056b3;
+        }
+        @media print {
+            .print-button {
+                display: none;
+            }
+            body {
+                padding: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="print-button" onclick="window.print()">Печать всех листов</button>
+    
+    <% registrationLists.forEach((list, index) => { %>
+    <div class="registration-list">
+        <div class="header">
+            <div class="school-name">
+                МУНИЦИПАЛЬНОЕ АВТОНОМНОЕ ОБЩЕОБРАЗОВАТЕЛЬНОЕ УЧРЕЖДЕНИЕ - СРЕДНЯЯ ОБЩЕОБРАЗОВАТЕЛЬНАЯ ШКОЛА № 25 ИМЕНИ В.Г. ФЕОФАНОВА
+            </div>
+            <div class="olympiad-title">
+                Олимпиада по "<%= list.subject %>". Муниципальный тур
+            </div>
+            <div class="document-title">
+                ЛИСТ РЕГИСТРАЦИИ УЧАСТНИКОВ
+            </div>
+            <div class="classroom-info">
+                Кабинет № <strong><%= list.classroom %></strong>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th class="number-col">№ п/п</th>
+                    <th class="school-col">ОО</th>
+                    <th class="class-col">Класс</th>
+                    <th class="name-col">ФИО участника</th>
+                    <th class="classroom-col">Ауд.</th>
+                    <th class="place-col">Место</th>
+                    <th class="signature-col">Подпись</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% list.students.forEach((student, index) => { %>
+                <tr>
+                    <td><%= student.number %></td>
+                    <td><%= student.school %></td>
+                    <td><%= student.class %></td>
+                    <td class="name-col"><%= student.fullName %></td>
+                    <td><%= student.classroom %></td>
+                    <td><%= student.workplace %></td>
+                    <td><%= student.signature %></td>
+                </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+    <% }); %>
+</body>
+</html>

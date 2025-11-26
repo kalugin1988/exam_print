@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Генератор ведомостей Олимпиады</title>
+    <title>Генератор документов Олимпиады</title>
     <style>
         * {
             box-sizing: border-box;
@@ -21,7 +21,7 @@
         }
         
         .container {
-            max-width: 800px;
+            max-width: 1000px;
             margin: 0 auto;
             background: white;
             border-radius: 15px;
@@ -52,8 +52,8 @@
         }
         
         .form-section {
-            margin-bottom: 30px;
-            padding: 25px;
+            margin-bottom: 25px;
+            padding: 20px;
             background: #f8f9fa;
             border-radius: 10px;
             border-left: 4px solid #3498db;
@@ -61,28 +61,29 @@
         
         .form-section h2 {
             color: #2c3e50;
-            margin-bottom: 20px;
-            font-size: 20px;
+            margin-bottom: 15px;
+            font-size: 18px;
             font-weight: 600;
         }
         
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         
         label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             font-weight: 600;
             color: #2c3e50;
+            font-size: 14px;
         }
         
         input, select {
             width: 100%;
-            padding: 12px 15px;
+            padding: 10px 12px;
             border: 2px solid #e1e8ed;
-            border-radius: 8px;
-            font-size: 16px;
+            border-radius: 6px;
+            font-size: 14px;
             transition: all 0.3s ease;
             background: white;
         }
@@ -95,7 +96,7 @@
         
         .radio-group {
             display: flex;
-            gap: 20px;
+            gap: 15px;
             flex-wrap: wrap;
         }
         
@@ -103,25 +104,49 @@
             display: flex;
             align-items: center;
             cursor: pointer;
+            font-size: 14px;
         }
         
         .radio-option input {
             width: auto;
-            margin-right: 8px;
+            margin-right: 6px;
         }
         
-        .buttons-grid {
+        .documents-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 15px;
             margin-top: 10px;
         }
         
-        .btn {
-            padding: 15px 20px;
-            border: none;
+        .document-category {
+            background: white;
+            padding: 15px;
             border-radius: 8px;
+            border: 1px solid #e1e8ed;
+        }
+        
+        .document-category h3 {
+            color: #2c3e50;
+            margin-bottom: 12px;
             font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .buttons-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .btn {
+            padding: 12px 15px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -130,7 +155,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 6px;
         }
         
         .btn-primary {
@@ -138,19 +163,9 @@
             color: white;
         }
         
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(52, 152, 219, 0.3);
-        }
-        
         .btn-success {
             background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
             color: white;
-        }
-        
-        .btn-success:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(39, 174, 96, 0.3);
         }
         
         .btn-secondary {
@@ -158,19 +173,9 @@
             color: white;
         }
         
-        .btn-secondary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(149, 165, 166, 0.3);
-        }
-        
         .btn-warning {
             background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
             color: white;
-        }
-        
-        .btn-warning:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(243, 156, 18, 0.3);
         }
         
         .btn-info {
@@ -178,9 +183,14 @@
             color: white;
         }
         
-        .btn-info:hover {
+        .btn-purple {
+            background: linear-gradient(135deg, #6f42c1 0%, #5a2d9c 100%);
+            color: white;
+        }
+        
+        .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(23, 162, 184, 0.3);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
         
         .hidden {
@@ -190,11 +200,11 @@
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            gap: 12px;
         }
         
         .icon {
-            font-size: 18px;
+            font-size: 16px;
         }
         
         .footer {
@@ -203,6 +213,13 @@
             background: #f8f9fa;
             color: #7f8c8d;
             border-top: 1px solid #e1e8ed;
+            font-size: 14px;
+        }
+        
+        .mode-info {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 5px;
         }
         
         @media (max-width: 768px) {
@@ -210,13 +227,22 @@
                 grid-template-columns: 1fr;
             }
             
-            .buttons-grid {
+            .documents-grid {
                 grid-template-columns: 1fr;
             }
             
             .radio-group {
                 flex-direction: column;
-                gap: 10px;
+                gap: 8px;
+            }
+            
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .form-container {
+                padding: 20px;
             }
         }
     </style>
@@ -224,7 +250,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>📊 Генератор ведомостей Олимпиады</h1>
+            <h1>📊 Генератор документов Олимпиады</h1>
             <p>Формирование печатных форм для учета олимпиадных работ</p>
         </div>
         
@@ -285,63 +311,73 @@
                     </div>
                 </div>
                 
-                <!-- Ведомости сдачи работ -->
+                <!-- Документы -->
                 <div class="form-section">
-                    <h2>📄 Ведомости сдачи работ</h2>
+                    <h2>📄 Генерация документов</h2>
                     
-                    <div class="buttons-grid">
-                        <button type="button" onclick="generateSingleStatement()" class="btn btn-primary">
-                            <span class="icon">📄</span>
-                            Ведомость по аудитории
-                        </button>
+                    <div class="documents-grid">
+                        <!-- Ведомости сдачи работ -->
+                        <div class="document-category">
+                            <h3><span class="icon">📄</span> Ведомости сдачи работ</h3>
+                            <div class="buttons-group">
+                                <button type="button" onclick="generateSingleStatement()" class="btn btn-primary">
+                                    Ведомость по аудитории
+                                </button>
+                                <button type="button" onclick="generateAllStatements()" class="btn btn-success hidden">
+                                    Ведомости для всех аудиторий
+                                </button>
+                                <div class="mode-info">Учет сданных работ участниками</div>
+                            </div>
+                        </div>
                         
-                        <button type="button" onclick="generateAllStatements()" class="btn btn-success hidden">
-                            <span class="icon">📑</span>
-                            Ведомости для всех аудиторий
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Сопроводительные бланки -->
-                <div class="form-section">
-                    <h2>📋 Сопроводительные бланки</h2>
-                    <p style="margin-bottom: 15px; color: #7f8c8d;">Группировка по аудитории, школе и параллели (каждая параллель в отдельном бланке)</p>
-                    
-                    <div class="buttons-grid">
-                        <button type="button" onclick="generateAccompanyingSheet()" class="btn btn-info">
-                            <span class="icon">📄</span>
-                            Бланки для аудитории
-                        </button>
+                        <!-- Сопроводительные бланки -->
+                        <div class="document-category">
+                            <h3><span class="icon">📋</span> Сопроводительные бланки</h3>
+                            <div class="buttons-group">
+                                <button type="button" onclick="generateAccompanyingSheet()" class="btn btn-info">
+                                    Бланки для аудитории
+                                </button>
+                                <button type="button" onclick="generateAllAccompanyingSheets()" class="btn btn-info hidden">
+                                    Бланки для всех аудиторий
+                                </button>
+                                <div class="mode-info">Коды работ по параллелям</div>
+                            </div>
+                        </div>
                         
-                        <button type="button" onclick="generateAllAccompanyingSheets()" class="btn btn-info hidden">
-                            <span class="icon">📑</span>
-                            Бланки для всех аудиторий
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Дополнительные формы -->
-                <div class="form-section">
-                    <h2>📊 Дополнительные формы</h2>
-                    <p style="margin-bottom: 15px; color: #7f8c8d;">Генерация сводных документов по выбранному предмету</p>
-                    
-                    <div class="buttons-grid">
-                        <button type="button" onclick="generateGeneralStatement()" class="btn btn-warning">
-                            <span class="icon">📊</span>
-                            Общая ведомость учета
-                        </button>
+                        <!-- Листы регистрации -->
+                        <div class="document-category">
+                            <h3><span class="icon">📝</span> Листы регистрации</h3>
+                            <div class="buttons-group">
+                                <button type="button" onclick="generateRegistrationList()" class="btn btn-purple">
+                                    Лист регистрации
+                                </button>
+                                <button type="button" onclick="generateAllRegistrationLists()" class="btn btn-purple hidden">
+                                    Листы регистрации (все)
+                                </button>
+                                <div class="mode-info">Регистрация участников Олимпиады</div>
+                            </div>
+                        </div>
                         
-                        <button type="button" onclick="generateTransferAct()" class="btn btn-secondary">
-                            <span class="icon">📦</span>
-                            Акт приема-передачи
-                        </button>
+                        <!-- Сводные документы -->
+                        <div class="document-category">
+                            <h3><span class="icon">📊</span> Сводные документы</h3>
+                            <div class="buttons-group">
+                                <button type="button" onclick="generateGeneralStatement()" class="btn btn-warning">
+                                    Общая ведомость учета
+                                </button>
+                                <button type="button" onclick="generateTransferAct()" class="btn btn-secondary">
+                                    Акт приема-передачи
+                                </button>
+                                <div class="mode-info">Сводная информация по предмету</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </form>
         </div>
         
         <div class="footer">
-            <p>Система генерации печатных форм • Олимпиадные работы</p>
+            <p>Система генерации печатных форм • МАОУ-СОШ № 25 • Олимпиадные работы</p>
         </div>
     </div>
 
@@ -351,18 +387,15 @@
         const classroomField = document.getElementById('classroomField');
         const classroomSelect = document.getElementById('classroom');
         const subjectSelect = document.getElementById('subject');
-        const singleBtn = document.querySelector('button[onclick="generateSingleStatement()"]');
-        const allBtn = document.querySelector('button[onclick="generateAllStatements()"]');
-        const singleAccompanyingBtn = document.querySelector('button[onclick="generateAccompanyingSheet()"]');
-        const allAccompanyingBtn = document.querySelector('button[onclick="generateAllAccompanyingSheets()"]');
+        
+        // Кнопки для разных режимов
+        const singleButtons = document.querySelectorAll('.btn-primary, .btn-info, .btn-purple');
+        const allButtons = document.querySelectorAll('.btn-success, .btn-info.hidden, .btn-purple.hidden');
 
         // Инициализация
         document.addEventListener('DOMContentLoaded', function() {
-            // Установка сегодняшней даты по умолчанию
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('exam_date').value = today;
-            
-            // Загрузка всех предметов при загрузке страницы
             loadAllSubjects();
         });
 
@@ -372,24 +405,28 @@
                 if (this.value === 'all') {
                     classroomField.style.opacity = '0.6';
                     classroomField.style.pointerEvents = 'none';
-                    singleBtn.classList.add('hidden');
-                    allBtn.classList.remove('hidden');
-                    singleAccompanyingBtn.classList.add('hidden');
-                    allAccompanyingBtn.classList.remove('hidden');
+                    toggleButtons(true);
                     loadAllSubjects();
                 } else {
                     classroomField.style.opacity = '1';
                     classroomField.style.pointerEvents = 'auto';
-                    singleBtn.classList.remove('hidden');
-                    allBtn.classList.add('hidden');
-                    singleAccompanyingBtn.classList.remove('hidden');
-                    allAccompanyingBtn.classList.add('hidden');
+                    toggleButtons(false);
                     if (classroomSelect.value) {
                         loadSubjectsForClassroom(classroomSelect.value);
                     }
                 }
             });
         });
+
+        // Переключение кнопок между режимами
+        function toggleButtons(isAllMode) {
+            singleButtons.forEach(btn => {
+                btn.classList.toggle('hidden', isAllMode);
+            });
+            allButtons.forEach(btn => {
+                btn.classList.toggle('hidden', !isAllMode);
+            });
+        }
 
         // Загрузка предметов для аудитории
         function loadSubjectsForClassroom(classroom) {
@@ -435,58 +472,64 @@
             }
         });
 
-        // Функции генерации ведомостей
+        // Функции генерации документов
         function generateSingleStatement() {
             const formData = getFormData();
             if (!formData) return;
-            
             if (!formData.classroom) {
-                showError('Выберите аудиторию для генерации ведомости');
+                showError('Выберите аудиторию');
                 return;
             }
-            
             window.open(`/generate?classroom=${formData.classroom}&subject=${formData.subject}&exam_date=${formData.exam_date}&site_code=${formData.site_code}`, '_blank');
         }
 
         function generateAllStatements() {
             const formData = getFormData();
             if (!formData) return;
-            
             window.open(`/generate?subject=${formData.subject}&exam_date=${formData.exam_date}&site_code=${formData.site_code}&all_classrooms=true`, '_blank');
         }
 
-        // Функции для сопроводительных бланков
         function generateAccompanyingSheet() {
             const formData = getFormData();
             if (!formData) return;
-            
             if (!formData.classroom) {
-                showError('Выберите аудиторию для генерации сопроводительных бланков');
+                showError('Выберите аудиторию');
                 return;
             }
-            
             window.open(`/accompanying-sheet?classroom=${formData.classroom}&subject=${formData.subject}&exam_date=${formData.exam_date}&site_code=${formData.site_code}`, '_blank');
         }
 
         function generateAllAccompanyingSheets() {
             const formData = getFormData();
             if (!formData) return;
-            
             window.open(`/accompanying-sheet?subject=${formData.subject}&exam_date=${formData.exam_date}&site_code=${formData.site_code}&all_classrooms=true`, '_blank');
         }
 
-        // Функции для дополнительных форм
+        function generateRegistrationList() {
+            const formData = getFormData();
+            if (!formData) return;
+            if (!formData.classroom) {
+                showError('Выберите аудиторию');
+                return;
+            }
+            window.open(`/registration-list?classroom=${formData.classroom}&subject=${formData.subject}&exam_date=${formData.exam_date}&site_code=${formData.site_code}`, '_blank');
+        }
+
+        function generateAllRegistrationLists() {
+            const formData = getFormData();
+            if (!formData) return;
+            window.open(`/registration-list?subject=${formData.subject}&exam_date=${formData.exam_date}&site_code=${formData.site_code}&all_classrooms=true`, '_blank');
+        }
+
         function generateGeneralStatement() {
             const formData = getFormData();
             if (!formData) return;
-            
             window.open(`/general-statement?subject=${formData.subject}&exam_date=${formData.exam_date}&site_code=${formData.site_code}`, '_blank');
         }
 
         function generateTransferAct() {
             const formData = getFormData();
             if (!formData) return;
-            
             window.open(`/transfer-act?subject=${formData.subject}&exam_date=${formData.exam_date}&site_code=${formData.site_code}`, '_blank');
         }
 

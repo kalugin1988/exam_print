@@ -71,17 +71,14 @@ app.get('/generate', async (req, res) => {
       return res.status(400).send('Не все обязательные поля заполнены');
     }
 
-    // Если выбран режим "все аудитории"
     if (all_classrooms === 'true') {
       return generateForAllClassrooms(req, res);
     }
 
-    // Режим одной аудитории
     if (!classroom) {
       return res.status(400).send('Не выбрана аудитория');
     }
 
-    // Получаем учеников для выбранного кабинета и предмета
     const studentsResult = await pool.query(`
       SELECT 
         "фимилия" as "last_name",
@@ -98,11 +95,10 @@ app.get('/generate', async (req, res) => {
       fullName: `${student.last_name} ${student.first_name} ${student.middle_name || ''}`.trim(),
       workplace: student.workplace,
       parallel: student.parallel,
-      sheets: '', // оставляем пустым для ручного заполнения
-      signature: '' // оставляем пустым для ручного заполнения
+      sheets: '',
+      signature: ''
     }));
 
-    // Заполняем до 15 строк
     while (students.length < 15) {
       students.push({
         fullName: '',
@@ -132,7 +128,6 @@ async function generateForAllClassrooms(req, res) {
   try {
     const { subject, exam_date, site_code } = req.query;
 
-    // Получаем все аудитории с учениками по выбранному предмету
     const classroomsResult = await pool.query(`
       SELECT DISTINCT "номер_кабинета" 
       FROM "Ученики" 
@@ -146,7 +141,6 @@ async function generateForAllClassrooms(req, res) {
 
     const statements = [];
 
-    // Для каждой аудитории формируем ведомость
     for (const classroomRow of classroomsResult.rows) {
       const classroom = classroomRow.номер_кабинета;
       
@@ -170,7 +164,6 @@ async function generateForAllClassrooms(req, res) {
         signature: ''
       }));
 
-      // Заполняем до 15 строк
       while (students.length < 15) {
         students.push({
           fullName: '',
@@ -212,7 +205,6 @@ app.get('/general-statement', async (req, res) => {
       return res.status(400).send('Не все обязательные поля заполнены');
     }
 
-    // Получаем данные по аудиториям и параллелям
     const classroomsData = await pool.query(`
       SELECT 
         "номер_кабинета",
@@ -228,12 +220,11 @@ app.get('/general-statement', async (req, res) => {
       classroom: row.номер_кабинета,
       parallel: row.паралель,
       planned: row.planned_count,
-      actual: '', // оставляем пустым для ручного заполнения
-      responsible: '', // оставляем пустым для ручного заполнения
-      signature: '' // оставляем пустым для ручного заполнения
+      actual: '',
+      responsible: '',
+      signature: ''
     }));
 
-    // Заполняем до 15 строк
     while (rows.length < 15) {
       rows.push({
         classroom: '',
@@ -266,7 +257,6 @@ app.get('/transfer-act', async (req, res) => {
       return res.status(400).send('Не все обязательные поля заполнены');
     }
 
-    // Получаем данные по аудиториям и параллелям для олимпиадных работ
     const worksData = await pool.query(`
       SELECT 
         "паралель",
@@ -278,7 +268,6 @@ app.get('/transfer-act', async (req, res) => {
       ORDER BY "паралель", "номер_кабинета"
     `, [subject]);
 
-    // Группируем по параллелям для итогов
     const parallelTotals = await pool.query(`
       SELECT 
         "паралель",
@@ -295,7 +284,6 @@ app.get('/transfer-act', async (req, res) => {
       count: row.work_count
     }));
 
-    // Заполняем до 15 строк для работ
     while (worksRows.length < 15) {
       worksRows.push({
         parallel: '',
@@ -309,7 +297,6 @@ app.get('/transfer-act', async (req, res) => {
       total: row.total_count
     }));
 
-    // Заполняем до 15 строк для итогов
     while (parallelTotalsRows.length < 15) {
       parallelTotalsRows.push({
         parallel: '',
@@ -330,7 +317,7 @@ app.get('/transfer-act', async (req, res) => {
   }
 });
 
-// Генерация сопроводительного бланка для одной аудитории и параллели
+// Генерация сопроводительного бланка
 app.get('/accompanying-sheet', async (req, res) => {
   try {
     const { classroom, subject, exam_date, site_code, all_classrooms } = req.query;
@@ -339,17 +326,14 @@ app.get('/accompanying-sheet', async (req, res) => {
       return res.status(400).send('Не все обязательные поля заполнены');
     }
 
-    // Если выбран режим "все аудитории"
     if (all_classrooms === 'true') {
       return generateAccompanyingSheetsForAll(req, res);
     }
 
-    // Для одной аудитории - получаем все параллели
     if (!classroom) {
       return res.status(400).send('Не выбрана аудитория');
     }
 
-    // Получаем список параллелей для выбранной аудитории и предмета
     const parallelsResult = await pool.query(`
       SELECT DISTINCT "паралель"
       FROM "Ученики" 
@@ -361,7 +345,6 @@ app.get('/accompanying-sheet', async (req, res) => {
       return res.status(404).send('Не найдено данных для выбранной аудитории и предмета');
     }
 
-    // Получаем данные для каждой параллели отдельно
     const sheets = [];
     for (const parallelRow of parallelsResult.rows) {
       const parallel = parallelRow.паралель;
@@ -381,8 +364,8 @@ app.get('/accompanying-sheet', async (req, res) => {
       if (sheetData.rows.length > 0) {
         const row = sheetData.rows[0];
         sheets.push({
-          school_code: "810103", // Фиксированное значение
-          school_name: "МАОУ-СОШ № 25", // Фиксированное значение
+          school_code: "810103",
+          school_name: "МАОУ-СОШ № 25",
           subject: row.предмет,
           classroom: row.номер_кабинета,
           parallel: row.паралель,
@@ -410,7 +393,6 @@ async function generateAccompanyingSheetsForAll(req, res) {
   try {
     const { subject, exam_date, site_code } = req.query;
 
-    // Получаем все данные для сопроводительных бланков с группировкой по номер_кабинета, паралель
     const allData = await pool.query(`
       SELECT 
         "номер_кабинета",
@@ -428,10 +410,9 @@ async function generateAccompanyingSheetsForAll(req, res) {
       return res.status(404).send('Не найдено данных для выбранного предмета');
     }
 
-    // Каждая строка - отдельный сопроводительный бланк
     const sheets = allData.rows.map(row => ({
-      school_code: "810103", // Фиксированное значение
-      school_name: "МАОУ-СОШ № 25", // Фиксированное значение
+      school_code: "810103",
+      school_name: "МАОУ-СОШ № 25",
       subject: row.предмет,
       classroom: row.номер_кабинета,
       parallel: row.паралель,
@@ -448,6 +429,125 @@ async function generateAccompanyingSheetsForAll(req, res) {
     });
   } catch (error) {
     console.error('Ошибка при генерации сопроводительных бланков для всех аудиторий:', error);
+    res.status(500).send('Ошибка сервера: ' + error.message);
+  }
+}
+
+// Генерация листа регистрации участников
+app.get('/registration-list', async (req, res) => {
+  try {
+    const { classroom, subject, exam_date, site_code, all_classrooms } = req.query;
+    
+    if (!subject || !exam_date || !site_code) {
+      return res.status(400).send('Не все обязательные поля заполнены');
+    }
+
+    if (all_classrooms === 'true') {
+      return generateRegistrationListsForAll(req, res);
+    }
+
+    if (!classroom) {
+      return res.status(400).send('Не выбрана аудитория');
+    }
+
+    const studentsResult = await pool.query(`
+      SELECT 
+        "фимилия" as "last_name",
+        "имя" as "first_name",
+        "отчество" as "middle_name",
+        "номер_места" as "workplace",
+        "паралель" as "parallel",
+        "school_name_oo" as "school_name"
+      FROM "Ученики" 
+      WHERE "номер_кабинета" = $1 AND "предмет" = $2
+      ORDER BY "номер_места"
+    `, [classroom, subject]);
+
+    const students = studentsResult.rows.map((student, index) => ({
+      number: index + 1,
+      school: student.school_name,
+      class: student.parallel,
+      fullName: `${student.last_name} ${student.first_name} ${student.middle_name || ''}`.trim(),
+      classroom: classroom,
+      workplace: student.workplace,
+      signature: ''
+    }));
+
+    res.render('registration-list', {
+      subject: subject,
+      exam_date: exam_date,
+      site_code: site_code,
+      classroom: classroom,
+      students: students,
+      single_mode: true
+    });
+  } catch (error) {
+    console.error('Ошибка при генерации листа регистрации:', error);
+    res.status(500).send('Ошибка сервера: ' + error.message);
+  }
+});
+
+// Генерация листов регистрации для всех аудиторий
+async function generateRegistrationListsForAll(req, res) {
+  try {
+    const { subject, exam_date, site_code } = req.query;
+
+    const classroomsResult = await pool.query(`
+      SELECT DISTINCT "номер_кабинета" 
+      FROM "Ученики" 
+      WHERE "предмет" = $1 AND "номер_кабинета" IS NOT NULL
+      ORDER BY "номер_кабинета"
+    `, [subject]);
+
+    if (classroomsResult.rows.length === 0) {
+      return res.status(404).send('Не найдено аудиторий для выбранного предмета');
+    }
+
+    const registrationLists = [];
+
+    for (const classroomRow of classroomsResult.rows) {
+      const classroom = classroomRow.номер_кабинета;
+      
+      const studentsResult = await pool.query(`
+        SELECT 
+          "фимилия" as "last_name",
+          "имя" as "first_name",
+          "отчество" as "middle_name",
+          "номер_места" as "workplace",
+          "паралель" as "parallel",
+          "school_number_oo" as "school_name"
+        FROM "Ученики" 
+        WHERE "номер_кабинета" = $1 AND "предмет" = $2
+        ORDER BY "номер_места"
+      `, [classroom, subject]);
+
+      const students = studentsResult.rows.map((student, index) => ({
+        number: index + 1,
+        school: student.school_name,
+        class: student.parallel,
+        fullName: `${student.last_name} ${student.first_name} ${student.middle_name || ''}`.trim(),
+        classroom: classroom,
+        workplace: student.workplace,
+        signature: ''
+      }));
+
+      registrationLists.push({
+        subject: subject,
+        exam_date: exam_date,
+        site_code: site_code,
+        classroom: classroom,
+        students: students
+      });
+    }
+
+    res.render('all-registration-lists', {
+      registrationLists: registrationLists,
+      subject: subject,
+      exam_date: exam_date,
+      site_code: site_code
+    });
+  } catch (error) {
+    console.error('Ошибка при генерации листов регистрации для всех аудиторий:', error);
     res.status(500).send('Ошибка сервера: ' + error.message);
   }
 }
@@ -471,7 +571,7 @@ app.get('/api/subjects/:classroom', async (req, res) => {
   }
 });
 
-// API для получения всех предметов (для режима всех аудиторий)
+// API для получения всех предметов
 app.get('/api/all-subjects', async (req, res) => {
   try {
     const result = await pool.query(`
