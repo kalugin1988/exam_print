@@ -369,22 +369,20 @@ app.get('/accompanying-sheet', async (req, res) => {
       const sheetData = await pool.query(`
         SELECT 
           "номер_кабинета",
-          "school_code",
-          "school_name_oo",
           "предмет",
           "паралель",
           COUNT(*) as "student_count",
           ARRAY_AGG("participant_code" ORDER BY "номер_места") as "participant_codes"
         FROM "Ученики" 
         WHERE "номер_кабинета" = $1 AND "предмет" = $2 AND "паралель" = $3
-        GROUP BY "номер_кабинета", "school_code", "school_name_oo", "предмет", "паралель"
+        GROUP BY "номер_кабинета", "предмет", "паралель"
       `, [classroom, subject, parallel]);
 
       if (sheetData.rows.length > 0) {
         const row = sheetData.rows[0];
         sheets.push({
-          school_code: row.school_code,
-          school_name: row.school_name_oo,
+          school_code: "810103", // Фиксированное значение
+          school_name: "МАОУ-СОШ № 25", // Фиксированное значение
           subject: row.предмет,
           classroom: row.номер_кабинета,
           parallel: row.паралель,
@@ -412,20 +410,18 @@ async function generateAccompanyingSheetsForAll(req, res) {
   try {
     const { subject, exam_date, site_code } = req.query;
 
-    // Получаем все данные для сопроводительных бланков с группировкой по номер_кабинета, school_code, паралель
+    // Получаем все данные для сопроводительных бланков с группировкой по номер_кабинета, паралель
     const allData = await pool.query(`
       SELECT 
         "номер_кабинета",
-        "school_code",
-        "school_name_oo",
         "предмет",
         "паралель",
         COUNT(*) as "student_count",
         ARRAY_AGG("participant_code" ORDER BY "номер_места") as "participant_codes"
       FROM "Ученики" 
       WHERE "предмет" = $1
-      GROUP BY "номер_кабинета", "school_code", "school_name_oo", "предмет", "паралель"
-      ORDER BY "номер_кабинета", "school_code", "паралель"
+      GROUP BY "номер_кабинета", "предмет", "паралель"
+      ORDER BY "номер_кабинета", "паралель"
     `, [subject]);
 
     if (allData.rows.length === 0) {
@@ -434,8 +430,8 @@ async function generateAccompanyingSheetsForAll(req, res) {
 
     // Каждая строка - отдельный сопроводительный бланк
     const sheets = allData.rows.map(row => ({
-      school_code: row.school_code,
-      school_name: row.school_name_oo,
+      school_code: "810103", // Фиксированное значение
+      school_name: "МАОУ-СОШ № 25", // Фиксированное значение
       subject: row.предмет,
       classroom: row.номер_кабинета,
       parallel: row.паралель,
