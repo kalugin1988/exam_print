@@ -164,9 +164,11 @@
             <div class="codes-column">
                 <div class="codes-header">КОДЫ РАБОТ</div>
                 <div class="codes-list">
-                    <% for(let i = 1; i <= 16; i++) { %>
+                    <% for(let i = 1; i <= 8; i++) { %>
                     <div class="code-item">
                         <span class="code-number"><%= i %></span>
+                    </div>
+                    <div class="code-item">
                         <span><%= sheet.participant_codes[i-1] || '' %></span>
                     </div>
                     <% } %>
@@ -176,9 +178,11 @@
             <div class="codes-column">
                 <div class="codes-header">КОДЫ РАБОТ</div>
                 <div class="codes-list">
-                    <% for(let i = 17; i <= 32; i++) { %>
+                    <% for(let i = 9; i <= 16; i++) { %>
                     <div class="code-item">
                         <span class="code-number"><%= i %></span>
+                    </div>
+                    <div class="code-item">
                         <span><%= sheet.participant_codes[i-1] || '' %></span>
                     </div>
                     <% } %>
