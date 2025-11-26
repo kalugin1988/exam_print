@@ -330,6 +330,132 @@ app.get('/transfer-act', async (req, res) => {
   }
 });
 
+// Генерация сопроводительного бланка для одной аудитории и параллели
+app.get('/accompanying-sheet', async (req, res) => {
+  try {
+    const { classroom, subject, exam_date, site_code, all_classrooms } = req.query;
+    
+    if (!subject || !exam_date || !site_code) {
+      return res.status(400).send('Не все обязательные поля заполнены');
+    }
+
+    // Если выбран режим "все аудитории"
+    if (all_classrooms === 'true') {
+      return generateAccompanyingSheetsForAll(req, res);
+    }
+
+    // Для одной аудитории - получаем все параллели
+    if (!classroom) {
+      return res.status(400).send('Не выбрана аудитория');
+    }
+
+    // Получаем список параллелей для выбранной аудитории и предмета
+    const parallelsResult = await pool.query(`
+      SELECT DISTINCT "паралель"
+      FROM "Ученики" 
+      WHERE "номер_кабинета" = $1 AND "предмет" = $2
+      ORDER BY "паралель"
+    `, [classroom, subject]);
+
+    if (parallelsResult.rows.length === 0) {
+      return res.status(404).send('Не найдено данных для выбранной аудитории и предмета');
+    }
+
+    // Получаем данные для каждой параллели отдельно
+    const sheets = [];
+    for (const parallelRow of parallelsResult.rows) {
+      const parallel = parallelRow.паралель;
+      
+      const sheetData = await pool.query(`
+        SELECT 
+          "номер_кабинета",
+          "school_code",
+          "school_name_oo",
+          "предмет",
+          "паралель",
+          COUNT(*) as "student_count",
+          ARRAY_AGG("participant_code" ORDER BY "номер_места") as "participant_codes"
+        FROM "Ученики" 
+        WHERE "номер_кабинета" = $1 AND "предмет" = $2 AND "паралель" = $3
+        GROUP BY "номер_кабинета", "school_code", "school_name_oo", "предмет", "паралель"
+      `, [classroom, subject, parallel]);
+
+      if (sheetData.rows.length > 0) {
+        const row = sheetData.rows[0];
+        sheets.push({
+          school_code: row.school_code,
+          school_name: row.school_name_oo,
+          subject: row.предмет,
+          classroom: row.номер_кабинета,
+          parallel: row.паралель,
+          student_count: parseInt(row.student_count),
+          participant_codes: row.participant_codes || []
+        });
+      }
+    }
+
+    res.render('accompanying-sheet', {
+      sheets: sheets,
+      subject: subject,
+      exam_date: exam_date,
+      site_code: site_code,
+      single_mode: true
+    });
+  } catch (error) {
+    console.error('Ошибка при генерации сопроводительного бланка:', error);
+    res.status(500).send('Ошибка сервера: ' + error.message);
+  }
+});
+
+// Генерация сопроводительных бланков для всех аудиторий
+async function generateAccompanyingSheetsForAll(req, res) {
+  try {
+    const { subject, exam_date, site_code } = req.query;
+
+    // Получаем все данные для сопроводительных бланков с группировкой по номер_кабинета, school_code, паралель
+    const allData = await pool.query(`
+      SELECT 
+        "номер_кабинета",
+        "school_code",
+        "school_name_oo",
+        "предмет",
+        "паралель",
+        COUNT(*) as "student_count",
+        ARRAY_AGG("participant_code" ORDER BY "номер_места") as "participant_codes"
+      FROM "Ученики" 
+      WHERE "предмет" = $1
+      GROUP BY "номер_кабинета", "school_code", "school_name_oo", "предмет", "паралель"
+      ORDER BY "номер_кабинета", "school_code", "паралель"
+    `, [subject]);
+
+    if (allData.rows.length === 0) {
+      return res.status(404).send('Не найдено данных для выбранного предмета');
+    }
+
+    // Каждая строка - отдельный сопроводительный бланк
+    const sheets = allData.rows.map(row => ({
+      school_code: row.school_code,
+      school_name: row.school_name_oo,
+      subject: row.предмет,
+      classroom: row.номер_кабинета,
+      parallel: row.паралель,
+      student_count: parseInt(row.student_count),
+      participant_codes: row.participant_codes || []
+    }));
+
+    res.render('accompanying-sheet', {
+      sheets: sheets,
+      subject: subject,
+      exam_date: exam_date,
+      site_code: site_code,
+      single_mode: false
+    });
+  } catch (error) {
+    console.error('Ошибка при генерации сопроводительных бланков для всех аудиторий:', error);
+    res.status(500).send('Ошибка сервера: ' + error.message);
+  }
+}
+
 // API для получения предметов по кабинету
 app.get('/api/subjects/:classroom', async (req, res) => {
   try {
@@ -367,5 +493,5 @@ app.get('/api/all-subjects', async (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Сервер запущен на http://localhost:3000`);
+  console.log(`Сервер запущен на http://localhost:${port}`);
 });
