@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сопроводительный бланк</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .sheet {
+            max-width: 800px;
+            margin: 0 auto 50px auto;
+            page-break-after: always;
+        }
+        .sheet:last-child {
+            page-break-after: avoid;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #000;
+            padding-bottom: 10px;
+        }
+        .header h1 {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+        .school-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        .school-code {
+            text-align: left;
+        }
+        .school-name {
+            text-align: right;
+        }
+        .subject-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        .parallel-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        .codes-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        .codes-column {
+            border: 1px solid #000;
+        }
+        .codes-header {
+            background: #f0f0f0;
+            text-align: center;
+            padding: 5px;
+            font-weight: bold;
+            border-bottom: 1px solid #000;
+        }
+        .codes-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+        .code-item {
+            padding: 8px 5px;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
+            min-height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .code-item:nth-child(odd) {
+            border-right: 1px solid #ddd;
+        }
+        .code-number {
+            font-weight: bold;
+            margin-right: 5px;
+            min-width: 20px;
+        }
+        .print-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            z-index: 1000;
+        }
+        .print-button:hover {
+            background-color: #0056b3;
+        }
+        @media print {
+            .print-button {
+                display: none;
+            }
+            body {
+                padding: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="print-button" onclick="window.print()">Печать всех бланков</button>
+    
+    <% sheets.forEach((sheet, index) => { %>
+    <div class="sheet">
+        <div class="header">
+            <h1>СОПРОВОДИТЕЛЬНЫЙ БЛАНК</h1>
+        </div>
+
+        <div class="school-info">
+            <div class="school-code">
+                ППО: <strong><%= sheet.school_code %></strong>
+            </div>
+            <div class="school-name">
+                <strong><%= sheet.school_name %></strong>
+            </div>
+        </div>
+
+        <div class="subject-info">
+            <div>
+                Предмет: <strong><%= sheet.subject %></strong>
+            </div>
+            <div>
+                № аудитории: <strong><%= sheet.classroom %></strong>
+            </div>
+        </div>
+
+        <div class="parallel-info">
+            <div>
+                Параллель заданий: <strong><%= sheet.parallel %></strong>
+            </div>
+            <div>
+                Кол-во работ: <strong><%= sheet.student_count %></strong>
+            </div>
+        </div>
+
+        <div class="codes-grid">
+            <div class="codes-column">
+                <div class="codes-header">КОДЫ РАБОТ</div>
+                <div class="codes-list">
+                    <% for(let i = 1; i <= 16; i++) { %>
+                    <div class="code-item">
+                        <span class="code-number"><%= i %></span>
+                        <span><%= sheet.participant_codes[i-1] || '' %></span>
+                    </div>
+                    <% } %>
+                </div>
+            </div>
+            
+            <div class="codes-column">
+                <div class="codes-header">КОДЫ РАБОТ</div>
+                <div class="codes-list">
+                    <% for(let i = 17; i <= 32; i++) { %>
+                    <div class="code-item">
+                        <span class="code-number"><%= i %></span>
+                        <span><%= sheet.participant_codes[i-1] || '' %></span>
+                    </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+    <% }); %>
+</body>
+</html>
